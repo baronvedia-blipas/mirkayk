@@ -8,8 +8,10 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
+import { AgentTerminal } from "@/components/agents/agent-terminal";
+import { useAgentStream } from "@/lib/hooks/use-agent-stream";
 
-type Tab = "overview" | "prompt" | "instructions" | "skills";
+type Tab = "overview" | "prompt" | "instructions" | "skills" | "terminal";
 
 export function AgentDetail() {
   const { agents, selectedAgentId, selectAgent, updatePrompt, updateInstructions } = useAgentStore();
@@ -17,6 +19,8 @@ export function AgentDetail() {
   const createTask = useTaskStore((s) => s.createTask);
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [newTaskText, setNewTaskText] = useState("");
+
+  const { run: runAgent } = useAgentStream();
 
   const agent = agents.find((a) => a.id === selectedAgentId);
   if (!agent) return null;
@@ -28,7 +32,9 @@ export function AgentDetail() {
   const handleAssignTask = () => {
     if (!newTaskText.trim()) return;
     createTask({ title: newTaskText.trim(), description: newTaskText.trim(), agentId: agent.id, priority: "P2" });
+    runAgent(agent.id, newTaskText.trim());
     setNewTaskText("");
+    setActiveTab("terminal");
   };
 
   const tabs: { key: Tab; label: string }[] = [
@@ -36,6 +42,7 @@ export function AgentDetail() {
     { key: "prompt", label: "Prompt" },
     { key: "instructions", label: "Instructions" },
     { key: "skills", label: "Skills" },
+    { key: "terminal", label: "Terminal" },
   ];
 
   return (
@@ -151,6 +158,10 @@ export function AgentDetail() {
               <Badge key={skill} className="bg-lavender-100 text-lavender-200">{skill}</Badge>
             ))}
           </div>
+        )}
+
+        {activeTab === "terminal" && (
+          <AgentTerminal agentId={agent.id} />
         )}
       </div>
     </div>
