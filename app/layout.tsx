@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Lora, Nunito, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { GrainOverlay } from "@/components/shared/grain-overlay";
 
 const lora = Lora({
   subsets: ["latin"],
@@ -34,7 +35,7 @@ export default function RootLayout({
     <html lang="en" className={`${lora.variable} ${nunito.variable} ${jetbrains.variable}`}>
       <body className="font-body antialiased">
         {children}
-        <div className="grain-overlay" aria-hidden="true" />
+        <GrainOverlay />
       </body>
     </html>
   );
