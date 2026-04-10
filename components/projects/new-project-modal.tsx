@@ -46,6 +46,7 @@ export function NewProjectModal({ open, onClose }: NewProjectModalProps) {
         <Input
           label="Project name"
           id="project-name"
+          name="name"
           placeholder="My awesome project"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -55,6 +56,7 @@ export function NewProjectModal({ open, onClose }: NewProjectModalProps) {
         <Textarea
           label="Description"
           id="project-description"
+          name="description"
           placeholder="What is this project about?"
           value={description}
           onChange={(e) => setDescription(e.target.value)}

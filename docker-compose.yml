@@ -11,5 +11,15 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  db-test:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: mirkayk
+      POSTGRES_PASSWORD: mirkayk_test
+      POSTGRES_DB: mirkayk_test
+
 volumes:
   pgdata:

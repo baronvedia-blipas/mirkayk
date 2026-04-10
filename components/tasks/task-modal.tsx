@@ -53,6 +53,7 @@ export function TaskModal({ open, onClose }: TaskModalProps) {
       <div className="flex flex-col gap-4">
         <Textarea
           label="Task description"
+          name="description"
           placeholder="Describe what needs to be done..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
