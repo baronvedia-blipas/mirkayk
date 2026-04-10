@@ -31,9 +31,8 @@ function parseClaudeLine(line: string): string | null {
     if (event.type === "content_block_delta" && event.delta?.text) {
       return event.delta.text as string;
     }
-    if (event.type === "result" && event.result != null) {
-      return String(event.result);
-    }
+    // Skip "result" events — they duplicate the already-streamed content
+    // from content_block_delta / assistant events
     return null;
   } catch {
     // Non-JSON line (startup message) — pass through if non-empty
@@ -72,7 +71,6 @@ export function spawnCLI(options: CLIRunOptions): {
         args = [
           "-p", `"${prompt}"`,
           "--model", model,
-          "-s",
         ];
         args.push(...flags);
       }
