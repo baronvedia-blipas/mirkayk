@@ -14,6 +14,7 @@ const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
   { value: "pending", label: "Pending" },
   { value: "in_progress", label: "In Progress" },
   { value: "completed", label: "Completed" },
+  { value: "failed", label: "Failed" },
 ];
 
 export function TaskList() {
@@ -35,6 +36,7 @@ export function TaskList() {
         <select
           value={agentFilter}
           onChange={(e) => setAgentFilter(e.target.value)}
+          aria-label="Filter by agent"
           className="px-3 py-1.5 rounded-btn border border-border bg-surface font-body text-sm text-text-900 focus:outline-none focus:ring-2 focus:ring-pink-200"
         >
           <option value="all">All agents</option>

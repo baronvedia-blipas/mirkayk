@@ -56,8 +56,12 @@ export function TerminalModal({ open, provider, onClose, onConnected }: Terminal
   const info = PROVIDER_INFO[provider];
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-text-900/50 backdrop-blur-sm">
-      <div className="bg-gray-900 rounded-card w-full max-w-md shadow-2xl overflow-hidden">
+    <div
+      className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-text-900/50 backdrop-blur-sm"
+      onClick={onClose}
+      onKeyDown={(e) => { if (e.key === "Escape") onClose(); }}
+    >
+      <div className="bg-gray-900 rounded-card w-full max-w-md shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center gap-2 px-4 py-3 bg-gray-800">
           <div className="w-3 h-3 rounded-full bg-red-400" />
           <div className="w-3 h-3 rounded-full bg-yellow-400" />

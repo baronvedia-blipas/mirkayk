@@ -9,11 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { BotanicalDecor } from "@/components/shared/botanical-decor";
 
 const NAV_ITEMS = [
-  { label: "Dashboard", href: "/dashboard", icon: "\u2726" },
-  { label: "Agents", href: "/dashboard/agents", icon: "\u2726" },
-  { label: "Tasks", href: "/dashboard/tasks", icon: "\u2726" },
-  { label: "Projects", href: "/dashboard/projects", icon: "\u2726" },
-  { label: "Logs", href: "/dashboard/logs", icon: "\u2726" },
+  { label: "Dashboard", href: "/dashboard", icon: "\u25A3" },
+  { label: "Agents", href: "/dashboard/agents", icon: "\u2662" },
+  { label: "Tasks", href: "/dashboard/tasks", icon: "\u2611" },
+  { label: "Projects", href: "/dashboard/projects", icon: "\u2740" },
+  { label: "Logs", href: "/dashboard/logs", icon: "\u2263" },
   { label: "Budget", href: "/dashboard/budget", icon: "\u2726" },
 ];
 

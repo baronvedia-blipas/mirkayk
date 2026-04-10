@@ -12,9 +12,8 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task }: TaskCardProps) {
-  const agents = useAgentStore((s) => s.agents);
+  const agent = useAgentStore((s) => s.agents.find((a) => a.id === task.agentId));
   const completeTask = useTaskStore((s) => s.completeTask);
-  const agent = agents.find((a) => a.id === task.agentId);
   const priorityConfig = PRIORITY_CONFIG[task.priority];
 
   return (

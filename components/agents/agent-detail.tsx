@@ -39,7 +39,7 @@ export function AgentDetail() {
   ];
 
   return (
-    <div className="fixed inset-y-0 right-[280px] w-[420px] bg-surface border-l border-border shadow-card-hover z-30 flex flex-col transition-transform duration-200">
+    <div className="fixed inset-y-0 right-0 xl:right-[280px] w-full sm:w-[420px] bg-surface border-l border-border shadow-card-hover z-30 flex flex-col transition-transform duration-200">
       {/* Header */}
       <div className="flex items-center justify-between p-5 border-b border-border">
         <div className="flex items-center gap-2">
@@ -133,7 +133,12 @@ export function AgentDetail() {
           <div className="flex flex-col gap-2">
             {agent.instructions.map((inst, i) => (
               <label key={i} className="flex items-start gap-2 p-2 bg-surface-2 rounded-btn">
-                <input type="checkbox" defaultChecked className="mt-0.5 accent-pink-300" />
+                <input
+                  type="checkbox"
+                  checked
+                  readOnly
+                  className="mt-0.5 accent-pink-300"
+                />
                 <span className="text-xs font-body text-text-700">{inst}</span>
               </label>
             ))}

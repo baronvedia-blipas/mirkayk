@@ -11,6 +11,9 @@ export function Card({ children, className, onClick, hoverable = false }: CardPr
   return (
     <div
       onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } } : undefined}
       className={cn(
         "bg-surface border border-border rounded-card p-5 shadow-card transition-all duration-200",
         hoverable && "cursor-pointer hover:shadow-card-hover hover:-translate-y-0.5",
