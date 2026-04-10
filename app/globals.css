@@ -20,6 +20,8 @@
   --text-700: #7A5040;
   --text-500: #B09080;
   --border: rgba(232, 132, 158, 0.15);
+  --shadow-card-value: 0 2px 12px rgba(232, 132, 158, 0.08);
+  --shadow-card-hover-value: 0 8px 24px rgba(232, 132, 158, 0.15);
 }
 
 @theme inline {
@@ -49,17 +51,42 @@
   --radius-card: 16px;
   --radius-btn: 12px;
 
-  --shadow-card: 0 2px 12px rgba(232, 132, 158, 0.08);
-  --shadow-card-hover: 0 8px 24px rgba(232, 132, 158, 0.15);
+  --shadow-card: var(--shadow-card-value);
+  --shadow-card-hover: var(--shadow-card-hover-value);
 
   --animate-status-pulse: status-pulse 2s ease-in-out infinite;
   --animate-blink: blink 1s step-end infinite;
+}
+
+/* ── dark mode overrides ── */
+.dark {
+  --bg: #1A1210;
+  --surface: #241C18;
+  --surface-2: #2E241E;
+  --pink-100: #3D2028;
+  --pink-200: #A8607A;
+  --pink-300: #D4899F;
+  --sage-100: #1E2E1A;
+  --sage-200: #6A9A60;
+  --sand-100: #2E2418;
+  --sand-200: #A08A60;
+  --lavender-100: #28202E;
+  --lavender-200: #8A70A0;
+  --sky-100: #1A2230;
+  --peach-100: #2E2018;
+  --text-900: #F0E6E0;
+  --text-700: #C0A898;
+  --text-500: #8A7A70;
+  --border: rgba(212, 137, 159, 0.12);
+  --shadow-card-value: 0 2px 12px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover-value: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
 body {
   background-color: var(--bg);
   color: var(--text-900);
   font-family: var(--font-nunito), sans-serif;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 /* Animations */
@@ -85,7 +112,12 @@ body {
   pointer-events: none;
   z-index: 50;
   opacity: 0.04;
+  transition: opacity 0.2s;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 256px 256px;
+}
+
+.dark .grain-overlay {
+  opacity: 0.02;
 }

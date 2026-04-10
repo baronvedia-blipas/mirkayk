@@ -7,6 +7,7 @@ import { useProjectStore } from "@/lib/stores/projects";
 import { TokenMeter } from "@/components/ui/token-meter";
 import { Badge } from "@/components/ui/badge";
 import { BotanicalDecor } from "@/components/shared/botanical-decor";
+import { useTheme } from "@/lib/hooks/use-theme";
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard", icon: "\u25A3" },
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
 export function Sidebar() {
   const pathname = usePathname();
   const project = useProjectStore((s) => s.projects.find((p) => p.id === s.activeProjectId));
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <aside className="w-[220px] h-screen sticky top-0 flex flex-col bg-surface border-r border-border p-4 relative overflow-hidden">
@@ -55,8 +57,17 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="mt-auto pt-4 flex justify-center">
+      <div className="mt-auto pt-4 flex flex-col items-center gap-3">
         <TokenMeter percentage={62} label="Monthly budget" />
+        <button
+          onClick={toggleTheme}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-btn text-sm font-body text-text-700 hover:bg-surface-2 transition-all duration-200"
+          title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+        >
+          <span className="text-base">{theme === "dark" ? "\u2600" : "\u263E"}</span>
+          {theme === "dark" ? "Light mode" : "Dark mode"}
+        </button>
       </div>
 
       <BotanicalDecor position="sidebar-bottom" />

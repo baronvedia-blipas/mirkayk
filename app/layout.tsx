@@ -32,7 +32,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${lora.variable} ${nunito.variable} ${jetbrains.variable}`}>
+    <html lang="en" className={`${lora.variable} ${nunito.variable} ${jetbrains.variable}`} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light"){document.documentElement.classList.add(t)}else if(window.matchMedia("(prefers-color-scheme:dark)").matches){document.documentElement.classList.add("dark")}else{document.documentElement.classList.add("light")}}catch(e){document.documentElement.classList.add("light")}})()`,
+          }}
+        />
+      </head>
       <body className="font-body antialiased">
         {children}
         <GrainOverlay />
