@@ -8,6 +8,7 @@ import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
 import { SegmentedControl } from "@/components/ui/segmented-control";
+import { useAgentStream } from "@/lib/hooks/use-agent-stream";
 
 interface TaskModalProps {
   open: boolean;
@@ -26,6 +27,8 @@ export function TaskModal({ open, onClose }: TaskModalProps) {
   const [description, setDescription] = useState("");
   const [agentId, setAgentId] = useState<string>("");
   const [priority, setPriority] = useState<TaskPriority>("P2");
+  const { run: runAgent } = useAgentStream();
+  const [runImmediately, setRunImmediately] = useState(true);
 
   const handleSubmit = () => {
     if (!description.trim()) return;
@@ -35,9 +38,13 @@ export function TaskModal({ open, onClose }: TaskModalProps) {
       agentId: agentId || null,
       priority,
     });
+    if (agentId && runImmediately) {
+      runAgent(agentId, description.trim());
+    }
     setDescription("");
     setAgentId("");
     setPriority("P2");
+    setRunImmediately(true);
     onClose();
   };
 
@@ -74,6 +81,18 @@ export function TaskModal({ open, onClose }: TaskModalProps) {
           <span className="text-sm font-body font-medium text-text-700">Priority</span>
           <SegmentedControl options={PRIORITY_OPTIONS} value={priority} onChange={setPriority} />
         </div>
+
+        {agentId && (
+          <label className="flex items-center gap-2 text-sm font-body text-text-700">
+            <input
+              type="checkbox"
+              checked={runImmediately}
+              onChange={(e) => setRunImmediately(e.target.checked)}
+              className="accent-pink-300"
+            />
+            Run agent immediately
+          </label>
+        )}
 
         <Button onClick={handleSubmit} disabled={!description.trim()} className="mt-2">
           Assign task
