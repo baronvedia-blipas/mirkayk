@@ -68,6 +68,29 @@ export interface ActivityEntry {
   timestamp: Date;
 }
 
+// ── CLI Integration Types (Phase 2A) ──
+
+export interface CLIConfig {
+  provider: "claude" | "gemini";
+  model: string;
+  flags?: string[];
+}
+
+export interface CLIRunOptions {
+  provider: "claude" | "gemini";
+  model: string;
+  prompt: string;
+  systemPrompt?: string;
+  workingDir?: string;
+  flags?: string[];
+}
+
+export interface CLIEvent {
+  type: "output" | "error" | "done";
+  content: string;
+  timestamp: number;
+}
+
 export const AGENT_COLOR_MAP: Record<AgentColor, { bg: string; text: string }> = {
   sage: { bg: "bg-sage-100", text: "text-sage-200" },
   lavender: { bg: "bg-lavender-100", text: "text-lavender-200" },
