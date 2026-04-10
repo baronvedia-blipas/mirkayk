@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAgentCLIConfig } from "@/lib/cli/config";
 import { spawnCLI, isCLIAvailable } from "@/lib/cli/adapter";
 import { CLIEvent } from "@/lib/types";
+import { prisma } from "@/lib/db";
 
 // ── Active run tracking (server-side, module-level) ──────────────────────────
 
@@ -64,12 +65,39 @@ export async function POST(request: NextRequest): Promise<Response> {
   // Track as active run
   activeRuns.set(agentId, { kill });
 
+  // 6b. Persist run to database
+  const dbRun = await prisma.run.create({
+    data: {
+      agentId,
+      taskId: typeof taskId === "string" ? taskId : null,
+      input: prompt,
+      status: "running",
+    },
+  });
+
   // 7. Convert CLIEvent ReadableStream to SSE ReadableStream
   const encoder = new TextEncoder();
 
   const sseStream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const reader = cliStream.getReader();
+      let outputBuffer = "";
+      let flushTimeout: ReturnType<typeof setTimeout> | null = null;
+
+      const flushOutput = async () => {
+        if (outputBuffer) {
+          const toFlush = outputBuffer;
+          outputBuffer = "";
+          try {
+            await prisma.run.update({
+              where: { id: dbRun.id },
+              data: { output: { set: toFlush } },
+            });
+          } catch {
+            // DB write failure shouldn't break the stream
+          }
+        }
+      };
 
       try {
         while (true) {
@@ -78,6 +106,18 @@ export async function POST(request: NextRequest): Promise<Response> {
 
           const event = value as CLIEvent;
 
+          // Accumulate output for DB persistence
+          if (event.type === "output") {
+            outputBuffer += event.content;
+            // Debounce DB writes to every 2 seconds
+            if (!flushTimeout) {
+              flushTimeout = setTimeout(async () => {
+                flushTimeout = null;
+                await flushOutput();
+              }, 2000);
+            }
+          }
+
           // Format SSE frame
           const sseFrame =
             `event: ${event.type}\n` +
@@ -85,8 +125,27 @@ export async function POST(request: NextRequest): Promise<Response> {
 
           controller.enqueue(encoder.encode(sseFrame));
 
-          // On done event, clean up active run tracking
+          // On done event, persist final state and clean up
           if (event.type === "done") {
+            if (flushTimeout) {
+              clearTimeout(flushTimeout);
+              flushTimeout = null;
+            }
+            const exitCode = event.content.match(/exit_code:(\d+)/)?.[1];
+            const finalStatus = exitCode === "0" ? "completed" : "failed";
+            outputBuffer += ""; // ensure we have latest
+            try {
+              await prisma.run.update({
+                where: { id: dbRun.id },
+                data: {
+                  output: outputBuffer || undefined,
+                  status: finalStatus,
+                  endedAt: new Date(),
+                },
+              });
+            } catch {
+              // DB write failure shouldn't break the stream
+            }
             activeRuns.delete(agentId);
           }
         }
@@ -102,6 +161,7 @@ export async function POST(request: NextRequest): Promise<Response> {
           // controller may already be closing
         }
       } finally {
+        if (flushTimeout) clearTimeout(flushTimeout);
         try {
           reader.releaseLock();
         } catch {
@@ -121,6 +181,11 @@ export async function POST(request: NextRequest): Promise<Response> {
       // Client disconnected — kill the process
       kill();
       activeRuns.delete(agentId);
+      // Mark run as failed in DB
+      prisma.run.update({
+        where: { id: dbRun.id },
+        data: { status: "failed", endedAt: new Date() },
+      }).catch(() => {});
     },
   });
 

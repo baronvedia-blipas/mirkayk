@@ -1,10 +1,12 @@
 import { create } from "zustand";
 import { Agent, AgentStatus } from "@/lib/types";
-import { MOCK_AGENTS } from "@/lib/mock/agents";
 
 interface AgentStore {
   agents: Agent[];
   selectedAgentId: string | null;
+  isHydrated: boolean;
+
+  hydrate: () => Promise<void>;
   selectAgent: (id: string | null) => void;
   updateStatus: (id: string, status: AgentStatus, currentTask?: string | null) => void;
   updatePrompt: (id: string, systemPrompt: string) => void;
@@ -12,21 +14,52 @@ interface AgentStore {
 }
 
 export const useAgentStore = create<AgentStore>((set) => ({
-  agents: MOCK_AGENTS,
+  agents: [],
   selectedAgentId: null,
+  isHydrated: false,
+
+  hydrate: async () => {
+    const res = await fetch("/api/agents");
+    const agents = await res.json();
+    set({ agents, isHydrated: true });
+  },
+
   selectAgent: (id) => set({ selectedAgentId: id }),
-  updateStatus: (id, status, currentTask) =>
+
+  updateStatus: (id, status, currentTask) => {
     set((state) => ({
       agents: state.agents.map((a) =>
-        a.id === id ? { ...a, status, currentTask: currentTask !== undefined ? currentTask : a.currentTask } : a
+        a.id === id
+          ? { ...a, status, currentTask: currentTask !== undefined ? currentTask : a.currentTask }
+          : a
       ),
-    })),
-  updatePrompt: (id, systemPrompt) =>
+    }));
+    fetch(`/api/agents/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status, currentTask: currentTask ?? null }),
+    });
+  },
+
+  updatePrompt: (id, systemPrompt) => {
     set((state) => ({
       agents: state.agents.map((a) => (a.id === id ? { ...a, systemPrompt } : a)),
-    })),
-  updateInstructions: (id, instructions) =>
+    }));
+    fetch(`/api/agents/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ systemPrompt }),
+    });
+  },
+
+  updateInstructions: (id, instructions) => {
     set((state) => ({
       agents: state.agents.map((a) => (a.id === id ? { ...a, instructions } : a)),
-    })),
+    }));
+    fetch(`/api/agents/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ instructions }),
+    });
+  },
 }));

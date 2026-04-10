@@ -8,7 +8,9 @@ import { useTaskStore } from "./tasks";
 interface RunsStore {
   runs: AgentRun[];
   activeRunByAgent: Record<string, string>; // agentId → runId
+  isHydrated: boolean;
 
+  hydrate: () => Promise<void>;
   startRun(agentId: string, taskId: string | null, prompt: string): string;
   appendOutput(runId: string, content: string): void;
   completeRun(runId: string, status: "completed" | "failed"): void;
@@ -19,6 +21,25 @@ interface RunsStore {
 export const useRunsStore = create<RunsStore>((set, get) => ({
   runs: [],
   activeRunByAgent: {},
+  isHydrated: false,
+
+  hydrate: async () => {
+    const res = await fetch("/api/runs");
+    const runs = await res.json();
+    const parsed: AgentRun[] = runs.map((r: Record<string, unknown>) => ({
+      id: r.id,
+      agentId: r.agentId,
+      taskId: r.taskId || null,
+      input: r.input,
+      output: (r.output as string) || "",
+      tokensUsed: 0,
+      costUsd: 0,
+      status: r.status as AgentRun["status"],
+      startedAt: new Date(r.startedAt as string),
+      completedAt: r.endedAt ? new Date(r.endedAt as string) : null,
+    }));
+    set({ runs: parsed, isHydrated: true });
+  },
 
   startRun: (agentId, taskId, prompt) => {
     const runId = generateId();
