@@ -1,26 +1,91 @@
 @import "tailwindcss";
 
+/* ── mirkayk botanical design tokens ── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #FEF5EE;
+  --surface: #FFFAF6;
+  --surface-2: #FDF0E8;
+  --pink-100: #FFE0E8;
+  --pink-200: #F5B8CA;
+  --pink-300: #E8849E;
+  --sage-100: #D8EACF;
+  --sage-200: #A8C9A0;
+  --sand-100: #F5E8D8;
+  --sand-200: #E0C49A;
+  --lavender-100: #EDE0F0;
+  --lavender-200: #C8AED8;
+  --sky-100: #DCE8F5;
+  --peach-100: #FFE8DC;
+  --text-900: #2E1A14;
+  --text-700: #7A5040;
+  --text-500: #B09080;
+  --border: rgba(232, 132, 158, 0.15);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-pink-100: var(--pink-100);
+  --color-pink-200: var(--pink-200);
+  --color-pink-300: var(--pink-300);
+  --color-sage-100: var(--sage-100);
+  --color-sage-200: var(--sage-200);
+  --color-sand-100: var(--sand-100);
+  --color-sand-200: var(--sand-200);
+  --color-lavender-100: var(--lavender-100);
+  --color-lavender-200: var(--lavender-200);
+  --color-sky-100: var(--sky-100);
+  --color-peach-100: var(--peach-100);
+  --color-text-900: var(--text-900);
+  --color-text-700: var(--text-700);
+  --color-text-500: var(--text-500);
+  --color-border: var(--border);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: var(--font-lora), serif;
+  --font-body: var(--font-nunito), sans-serif;
+  --font-mono: var(--font-jetbrains), monospace;
+
+  --radius-card: 16px;
+  --radius-btn: 12px;
+
+  --shadow-card: 0 2px 12px rgba(232, 132, 158, 0.08);
+  --shadow-card-hover: 0 8px 24px rgba(232, 132, 158, 0.15);
+
+  --animate-status-pulse: status-pulse 2s ease-in-out infinite;
+  --animate-blink: blink 1s step-end infinite;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  color: var(--text-900);
+  font-family: var(--font-nunito), sans-serif;
+}
+
+/* Animations */
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.3); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* Grain overlay texture */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
 }
